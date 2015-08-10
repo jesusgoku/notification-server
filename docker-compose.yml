@@ -1,0 +1,11 @@
+# docker run -it --rm --name my-running-script -v "$PWD":/usr/src/myapp -w /usr/src/myapp node:0.10 node your-daemon-or-script.js
+notification:
+    image: node
+    volumes:
+        - .:/usr/src/notification-server
+    working_dir: /usr/src/notification-server
+    command: node .
+    ports:
+        - "80:3001"
+    expose:
+        - "3001"
