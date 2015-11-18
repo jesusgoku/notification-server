@@ -8,7 +8,9 @@ var config = require('./config.js');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-server.listen(config.server.port);
+server.listen(config.server.port, function () {
+  util.log('Listen on port: ' + config.server.port);
+});
 
 app.get('/', function (req, res) {
   res.sendFile(__dirname + '/index.html');
@@ -20,7 +22,7 @@ app.post('/notification', function (req, res) {
   io.emit(event, data);
   res.sendStatus(204);
   util.log('Emit event: ' + event);
-  util.log('With data', data);
+  util.log('With data: ', data);
 });
 
 io.on('connection', function (socket) {
