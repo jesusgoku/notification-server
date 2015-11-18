@@ -2,18 +2,83 @@
 <head>
     <meta charset="utf-8">
     <title>Notification Server</title>
+    <style class="text/html">
+      body {
+        background-color: #eaeaea;
+      }
+      #messages {
+        width: 720px;
+        margin: 0 auto;
+        background-color: rgba(255, 204, 0, 0.48);
+        border-radius: 10px;
+        padding: 10px 20px 1px 20px;;
+        font-family: 'Helvetica Neue', Helvetica, sans-serif;
+
+      }
+      .message,
+      .info {
+        background-color: #ffcc00;
+        border-radius: 5px;
+        padding: 5px 10px;
+        margin-bottom: 10px;
+      }
+      .info {
+        background-color: #0099CC;
+      }
+      .info code {
+        background-color: black;
+        color: white;
+        padding: 2px 10px;
+        line-height: 2em;
+        display: block;
+      }
+    </style>
 </head>
 <body>
+  <div id="messages">
+    <div class="info">
+      <p>Not messages, testing on console with:</p>
+      <code>curl -X POST -H "Content-Type: application/json" -d '{ "event": "testing", "data": "Hello World" }' http://localhost:3001/notification</code>
+    </div>
+  </div>
 <!-- javascript -->
 <script src="/socket.io/socket.io.js"></script>
 <script>
   var socket = io.connect('http://' + location.host);
   socket.on('connect', function () {
     console.log('connect');
-    
-    socket.on('testing', function (data) {
+    socket.on('testing', onTesting);
+
+    var messages = document.getElementById('messages');
+    var info = document.querySelector('.info');
+    messages.addEventListener('message-added', onMessageAdded);
+    messages.addEventListener('message-removed', onMessageRemoved);
+
+    function onTesting(data) {
       console.log(data);
-    });
+
+      var message = document.createElement('div');
+      message.setAttribute('class', 'message');
+      message.innerText = JSON.stringify(data);
+      messages.appendChild(message);
+      messages.dispatchEvent(new Event('message-added'));
+      setTimeout(function () {
+        messages.removeChild(message);
+        messages.dispatchEvent(new Event('message-removed'));
+      }, 3000);
+    }
+
+    function onMessageAdded(e) {
+        info.style.display = 'none';
+    }
+
+    function onMessageRemoved() {
+      var messages = document.querySelectorAll('.message');
+      if (0 === messages.length) {
+        info.style.display = 'block';
+      }
+    }
+
   });
 </script>
 </body>
