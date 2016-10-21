@@ -27,4 +27,9 @@ app.post('/notification', function (req, res) {
 
 io.on('connection', function (socket) {
   util.log('Client id: ', socket.client.id);
+  socket.on('notification', function (data) {
+    io.emit(data.event, data.data);
+    util.log('Emit event: ' + data.event);
+    util.log('With data: ', data.data);
+  });
 });
